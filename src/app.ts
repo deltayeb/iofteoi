@@ -8,6 +8,7 @@ import { balance } from './routes/balance';
 import { leaderboard } from './routes/leaderboard';
 import { landing } from './routes/landing';
 import { tools } from './routes/tools';
+import { ui } from './routes/ui';
 import { apiRateLimit, authRateLimit, invokeRateLimit } from './middleware/rateLimit';
 import { inputLimit } from './middleware/inputLimit';
 
@@ -57,6 +58,7 @@ app.route('/invoke', invoke);
 app.route('/balance', balance);
 app.route('/leaderboard', leaderboard);
 app.route('/tools', tools);
+app.route('/ui', ui);
 
 // 404 handler
 app.notFound((c) => {
