@@ -104,7 +104,7 @@ const landingPage = html`
 </head>
 <body>
   <div class="container">
-    <h1>The International Office<br>for the Exchange<br>of Intelligence<span class="cursor"></span></h1>
+    <h1>The International Office<br>for the Exchange of<br>Intelligence<span class="cursor"></span></h1>
     <div class="prompt">[ click anywhere ]</div>
     <div class="status" id="status">
       <pre id="statusContent"></pre>
@@ -123,7 +123,19 @@ const landingPage = html`
         document.querySelector('.prompt').style.display = 'none';
         const res = await fetch('/api');
         const data = await res.json();
-        document.getElementById('statusContent').textContent = '> status\\n\\n' + JSON.stringify(data, null, 2);
+        const manifest = \`> SYSTEM STATUS: \${data.status.toUpperCase()}
+
+The Office is a marketplace for callable intelligence.
+
+Publishers register protocols.
+Callers invoke them.
+Reliability determines success.
+
+No marketing. No gatekeepers.
+Just protocols that work, and those that don't.
+
+[ v\${data.version} ]\`;
+        document.getElementById('statusContent').textContent = manifest;
         document.getElementById('status').classList.add('visible');
         clicked = true;
       } catch (e) {
