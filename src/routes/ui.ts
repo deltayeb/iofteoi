@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { html } from 'hono/html';
+import { html, raw } from 'hono/html';
 
 export const ui = new Hono();
 
@@ -80,14 +80,14 @@ const publisherNav = (loggedIn: boolean) => `
   </div>
 `;
 
-const authScript = `
+const authScript = raw(`
   function getToken() { return localStorage.getItem('token'); }
   function setToken(t) { localStorage.setItem('token', t); }
   function setAccount(a) { localStorage.setItem('account', JSON.stringify(a)); }
   function getAccount() { try { return JSON.parse(localStorage.getItem('account')); } catch { return null; } }
   function logout() { localStorage.clear(); window.location.href = '/ui/login'; }
   function requireAuth() { if (!getToken()) window.location.href = '/ui/login'; }
-`;
+`);
 
 // API Documentation
 ui.get('/docs', (c) => {
@@ -265,7 +265,8 @@ ui.get('/login', (c) => {
             setAccount(data.account);
             window.location.href = '/ui/dashboard';
           } catch (err) {
-            document.getElementById('error').textContent = err.message;
+            console.error('Login error:', err);
+            document.getElementById('error').textContent = err.message || 'Login failed';
           }
         };
       </script>
