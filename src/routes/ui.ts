@@ -412,7 +412,16 @@ ui.get('/publish', (c) => {
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>Publish Protocol - The Office</title>
-      <style>${baseStyles}</style>
+      <style>
+        ${baseStyles}
+        .field { margin-bottom: 1.5rem; }
+        .field .label { margin-bottom: 0.25rem; }
+        .field input, .field textarea { margin-bottom: 0.25rem; }
+        .note { font-size: 8px; color: #005500; line-height: 1.4; }
+        .help-box { background: #001100; border: 1px solid #003300; padding: 0.75rem; margin-top: 0.5rem; font-size: 9px; }
+        .help-box pre { margin: 0.5rem 0; white-space: pre-wrap; font-size: 8px; background: #000; padding: 0.5rem; }
+        .copy-btn { font-size: 8px; padding: 0.25rem 0.5rem; margin-top: 0.5rem; }
+      </style>
     </head><body>
       <div class="container">
         <h1>THE INTERNATIONAL OFFICE<br>FOR THE EXCHANGE OF INTELLIGENCE</h1>
@@ -421,29 +430,55 @@ ui.get('/publish', (c) => {
         <div id="error" class="error"></div>
         <div id="success" class="success"></div>
         <form id="publishForm">
-          <div class="label">NAME</div>
-          <input type="text" id="name" required placeholder="my-protocol">
+          <div class="field">
+            <div class="label">NAME</div>
+            <input type="text" id="name" required placeholder="my-protocol">
+          </div>
 
-          <div class="label">VERSION</div>
-          <input type="text" id="version" required placeholder="1.0.0">
+          <div class="field">
+            <div class="label">VERSION</div>
+            <input type="text" id="version" required placeholder="1.0.0">
+          </div>
 
-          <div class="label">DESCRIPTION (exactly 7 words - be precise)</div>
-          <input type="text" id="description" required placeholder="Converts PDF invoices to structured JSON">
-          <div id="wordCount" class="word-count">0/7 words</div>
+          <div class="field">
+            <div class="label">DESCRIPTION (exactly 7 words - be precise)</div>
+            <input type="text" id="description" required placeholder="Converts PDF invoices to structured JSON">
+            <div id="wordCount" class="word-count">0/7 words</div>
+          </div>
 
-          <div class="label">LONG DESCRIPTION (optional - for humans)</div>
-          <textarea id="longDescription" rows="3" placeholder="Detailed explanation of what your protocol does..."></textarea>
+          <div class="field">
+            <div class="label">LONG DESCRIPTION (optional - for humans)</div>
+            <textarea id="longDescription" rows="3" placeholder="Detailed explanation of what your protocol does..."></textarea>
+          </div>
 
-          <div class="label">HANDLER URL (your server endpoint)</div>
-          <input type="url" id="handlerUrl" required placeholder="https://your-server.com/handler">
-          <p class="muted" style="font-size:9px">We'll POST { input, invocationId } to this URL. Return 200+JSON for success, 422 to refuse.</p>
+          <div class="field">
+            <div class="label">HANDLER URL (your server endpoint)</div>
+            <input type="url" id="handlerUrl" required placeholder="https://your-server.com/handler">
+            <p class="note">We'll POST { input, invocationId } to this URL. Return 200+JSON for success, 422 to refuse.</p>
+            <div class="help-box">
+              <span class="muted">Don't have a handler URL? Copy this into Claude Code:</span>
+              <pre id="promptText">I want to deploy a function as an API endpoint for The Office (a protocol marketplace). The endpoint needs to:
+- Accept POST requests with JSON { input, invocationId }
+- Return JSON output
+- Be publicly accessible
 
-          <div class="label">PRICE PER INVOCATION (in cents)</div>
-          <input type="number" id="price" required min="1" value="10">
-          <p class="muted" style="font-size:9px">You receive 85% ($0.085 per call at 10¢). The Office takes 15%.</p>
+Here's what my function does: [describe it]
 
-          <div class="label">KEYWORDS (comma separated, max 10)</div>
-          <input type="text" id="keywords" placeholder="pdf, extraction, invoices, json">
+Help me deploy this. Ask me any questions you need about my setup, accounts, or preferences before recommending an approach.</pre>
+              <button type="button" class="copy-btn" onclick="copyPrompt()">[ COPY PROMPT ]</button>
+            </div>
+          </div>
+
+          <div class="field">
+            <div class="label">PRICE PER INVOCATION (in cents)</div>
+            <input type="number" id="price" required min="1" value="10">
+            <p class="note">You receive 85% ($0.085 per call at 10¢). The Office takes 15%.</p>
+          </div>
+
+          <div class="field">
+            <div class="label">KEYWORDS (comma separated, max 10)</div>
+            <input type="text" id="keywords" placeholder="pdf, extraction, invoices, json">
+          </div>
 
           <button type="submit">[ PUBLISH PROTOCOL ]</button>
         </form>
@@ -451,6 +486,14 @@ ui.get('/publish', (c) => {
       <script>
         ${authScript}
         requireAuth();
+
+        function copyPrompt() {
+          const text = document.getElementById('promptText').textContent;
+          navigator.clipboard.writeText(text);
+          const btn = document.querySelector('.copy-btn');
+          btn.textContent = '[ COPIED ]';
+          setTimeout(() => btn.textContent = '[ COPY PROMPT ]', 2000);
+        }
 
         const descInput = document.getElementById('description');
         const wordCountEl = document.getElementById('wordCount');
