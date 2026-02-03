@@ -93,6 +93,24 @@ const landingPage = html`
       font-size: 9px;
       margin-top: 2rem;
     }
+    .nav {
+      position: fixed;
+      bottom: 2rem;
+      left: 0;
+      right: 0;
+      text-align: center;
+      font-size: 10px;
+      z-index: 10;
+    }
+    .nav a {
+      color: #006600;
+      text-decoration: none;
+      margin: 0 1rem;
+    }
+    .nav a:hover {
+      color: #00ff00;
+      text-shadow: 0 0 5px #00ff00;
+    }
     @keyframes fadeIn {
       from { opacity: 0; }
       to { opacity: 1; }
@@ -109,6 +127,10 @@ const landingPage = html`
     <div class="status" id="status">
       <pre id="statusContent"></pre>
     </div>
+  </div>
+  <div class="nav">
+    <a href="/ui/docs">[ API DOCS ]</a>
+    <a href="/ui/login">[ PUBLISHER PORTAL ]</a>
   </div>
   <script>
     let clicked = false;
