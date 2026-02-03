@@ -6,6 +6,7 @@ import { protocols } from './routes/protocols';
 import { invoke } from './routes/invoke';
 import { balance } from './routes/balance';
 import { leaderboard } from './routes/leaderboard';
+import { landing } from './routes/landing';
 
 export const app = new Hono();
 
@@ -13,8 +14,24 @@ export const app = new Hono();
 app.use('*', logger());
 app.use('*', cors());
 
-// Health check
+// Landing page (HTML)
+app.route('/home', landing);
+
+// API status
+app.get('/api', (c) => {
+  return c.json({
+    name: 'The International Office for the Exchange of Intelligence',
+    version: '0.1.0',
+    status: 'operational',
+  });
+});
+
+// Redirect root to landing
 app.get('/', (c) => {
+  const accept = c.req.header('Accept') || '';
+  if (accept.includes('text/html')) {
+    return c.redirect('/home');
+  }
   return c.json({
     name: 'The International Office for the Exchange of Intelligence',
     version: '0.1.0',
