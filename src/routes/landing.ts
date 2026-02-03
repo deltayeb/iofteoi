@@ -17,34 +17,63 @@ const landingPage = html`
       box-sizing: border-box;
     }
     body {
-      background: #000;
-      color: #fff;
-      font-family: 'Times New Roman', Times, serif;
+      background: #0a0a0a;
+      color: #00ff00;
+      font-family: 'Courier New', Courier, monospace;
       min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
       user-select: none;
+      position: relative;
+      overflow: hidden;
+    }
+    body::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background:
+        repeating-linear-gradient(
+          0deg,
+          rgba(0, 0, 0, 0.15),
+          rgba(0, 0, 0, 0.15) 1px,
+          transparent 1px,
+          transparent 2px
+        );
+      pointer-events: none;
+      z-index: 1;
     }
     .container {
       text-align: center;
       padding: 2rem;
-      max-width: 800px;
+      max-width: 600px;
+      z-index: 2;
     }
     h1 {
-      font-size: clamp(1.5rem, 5vw, 3rem);
+      font-size: 11px;
       font-weight: 400;
-      letter-spacing: 0.1em;
-      line-height: 1.4;
+      letter-spacing: 0.15em;
+      line-height: 1.8;
       text-transform: uppercase;
+      text-shadow: 0 0 5px #00ff00, 0 0 10px #00ff00;
+    }
+    .cursor {
+      display: inline-block;
+      width: 8px;
+      height: 12px;
+      background: #00ff00;
+      margin-left: 2px;
+      animation: blink 1s step-end infinite;
     }
     .status {
       display: none;
-      margin-top: 3rem;
-      font-family: monospace;
-      font-size: 0.9rem;
-      color: #888;
+      margin-top: 2rem;
+      font-size: 10px;
+      color: #00aa00;
       animation: fadeIn 0.3s ease;
     }
     .status.visible {
@@ -53,19 +82,30 @@ const landingPage = html`
     .status pre {
       text-align: left;
       display: inline-block;
-      background: #111;
-      padding: 1.5rem;
-      border: 1px solid #333;
+      background: transparent;
+      padding: 1rem;
+      border: 1px solid #003300;
+      color: #00ff00;
+      text-shadow: 0 0 3px #00ff00;
+    }
+    .prompt {
+      color: #006600;
+      font-size: 9px;
+      margin-top: 2rem;
     }
     @keyframes fadeIn {
       from { opacity: 0; }
       to { opacity: 1; }
     }
+    @keyframes blink {
+      50% { opacity: 0; }
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>The International Office<br>for the Exchange<br>of Intelligence</h1>
+    <h1>The International Office<br>for the Exchange<br>of Intelligence<span class="cursor"></span></h1>
+    <div class="prompt">[ click anywhere ]</div>
     <div class="status" id="status">
       <pre id="statusContent"></pre>
     </div>
@@ -75,17 +115,19 @@ const landingPage = html`
     document.body.addEventListener('click', async () => {
       if (clicked) {
         document.getElementById('status').classList.remove('visible');
+        document.querySelector('.prompt').style.display = 'block';
         clicked = false;
         return;
       }
       try {
-        const res = await fetch('/');
+        document.querySelector('.prompt').style.display = 'none';
+        const res = await fetch('/api');
         const data = await res.json();
-        document.getElementById('statusContent').textContent = JSON.stringify(data, null, 2);
+        document.getElementById('statusContent').textContent = '> status\\n\\n' + JSON.stringify(data, null, 2);
         document.getElementById('status').classList.add('visible');
         clicked = true;
       } catch (e) {
-        document.getElementById('statusContent').textContent = 'Error fetching status';
+        document.getElementById('statusContent').textContent = '> error: connection failed';
         document.getElementById('status').classList.add('visible');
         clicked = true;
       }
